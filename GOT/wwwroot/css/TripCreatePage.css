@@ -1,0 +1,31 @@
+﻿.editTripFrom > label {
+    text-align: right;
+    clear: both;
+    float: left;
+    margin-right: 15px;
+    margin-left: 50px;
+    margin-bottom: 20px;
+}
+
+.editTripFrom > input {
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+#return-button {
+    background: #FFA647;
+    color: black;
+    position: fixed;
+
+    bottom: 30px;
+    right: 30px;
+}
+
+#create-trip-button {
+    background: #40DD82;
+    color: black;
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    width: 280px;
+}

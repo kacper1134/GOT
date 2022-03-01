@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Route Chose Page";
+    var routes = ViewData["Routes"] as List<Tuple<int, string, string>>;
+    var action = "Update";
+
+    if ((int)ViewData["TripNumber"] == -1) { action = "Create"; }
+}
+<html>
+<head>
+    <link rel="stylesheet" href="~/css/TripDetailsPage.css" />
+    <link rel="stylesheet" href="~/css/TripCreatePage.css" />
+    <link rel="stylesheet" href="~/css/route.css" />
+</head>
+<body>
+    <p>@action</p>
+    <div class="content-container">
+        <div class="trip-details-container">
+            <form method="post" asp-action="@action">
+                @if((int)ViewData["TripNumber"] != -1) { <input hidden name="tripNumber" value="@ViewData["TripNumber"]"/> }
+                <select name="routeNumber">
+                    @foreach (var route in routes)
+                    {
+                        <option value="@route.Item1">Od @route.Item2 do @route.Item3</option>
+                    }
+                    <input class="verification-button" id ="submit-button" type="submit" value="Wybierz"/>
+                </select>
+            </form>
+            <button class="verification-button" id="create-trip-button" onclick="ConfirmButtonClick()"> Zatwierdź </button>
+            <button class="verification-button" id="return-button" onclick="ReturnButtonClick()">Powrót</button>
+        </div>
+    </div>
+</body>
+</html>
+
+@section Scripts
+{
+    <script>
+        var tripNumber = @Html.Raw(ViewData["TripNumber"]);
+
+        function ReturnButtonClick() {
+            if (tripNumber == -1) {
+                window.location.href = "/Wycieczka/Create";
+            }
+            else {
+                window.location.href = "/Wycieczka/Update?tripNumber=" + tripNumber;
+            }
+        }
+
+        function ConfirmButtonClick() {
+            if (tripNumber == -1)
+            {
+                window.location.href = "/Wycieczka/Create";
+            }
+            else
+            {
+                window.location.href = "/Wycieczka/Update?tripNumber=" + tripNumber;
+            }
+        }
+
+    </script>
+}

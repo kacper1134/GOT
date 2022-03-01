@@ -1,0 +1,93 @@
+﻿@model Wycieczka;
+
+@{
+    ViewData["Title"] = "Trip Delete Page";
+
+    var tripSegments = ViewData["TripSegments"] as List<Odcinek>;
+    var i = 1;
+    var arrow = " -> ";
+    var enter = "\n";
+    var bracket = ") ";
+    var points = " punktów";
+    var space = " ";
+}
+
+<html>
+<head>
+    <link rel="stylesheet" href="~/css/TripDetailsPage.css" />
+    <link rel="stylesheet" href="~/css/TripDeletePage.css" />
+</head>
+<body>
+    <div class="content-container">
+        <div id="overlay">
+            <div class="trip-details-container">
+                <h1>@ViewData["TripTitle"]</h1>
+                <p>
+                    W dniach od <span class="special-text">@ViewData["TripStartTime"]</span> do <span class="special-text">@ViewData["TripEndTime"]</span> masz zaplanowaną wycieczkę na obszarze <span class="special-text">@tripSegments[0].Punkt_Poczatkowy.NazwaGrupyGorskiej,</span>
+                    za którą możesz zdobyć <span class="special-text">@ViewData["TripPoints"] punktów.</span>
+                </p>
+                <div class="route-segments">
+                    <h1>Trasa wycieczki</h1>
+                    <textarea disabled class="segments">
+                    @foreach (var segment in tripSegments)
+                    {
+                        @i; @bracket; @segment.Punkt_Poczatkowy.Nazwa; @arrow; @segment.Punkt_Koncowy.Nazwa; @space @segment.Punkty @points @enter;
+
+                        i = i + 1;
+                    }
+                </textarea>
+                    <button class="route-button" onclick="RouteButtonClick(@Model.Numer)">Pokaż na mapie</button>
+                </div>
+                <button id="DeleteTripButton" onclick="DeleteButtonClick(@Model.Numer)">Usuń</button>
+                <button class="verification-button" id="cancel-button" onclick="ReturnButtonClick()">Powrót</button>
+            </div>
+        </div>
+        <div class="my-modal" id="modalDelete">
+            <div class="my-modal-body">
+                <p style="margin:0">Usunięcie wycieczki jest operacją nieodwracalną.</p>
+                <p style="margin:0">Czy jesteś pewien, że chcesz to zrobić?</p>
+            </div>
+
+            <button id="ConfirmButton" class="modalLeftButton modalButton" onclick="ModalButtonClick(true)">Tak</button>
+            <button class="modalRightButton modalButton" onclick="ModalButtonClick(false)">Nie</button>
+
+        </div>
+
+    </div>
+</body>
+</html>
+
+@section Scripts
+{
+    <script>
+        function ReturnButtonClick() {
+            window.location.href = "@Url.Action("Index", "Wycieczka")";
+        }
+
+        function DeleteButtonClick(id) {
+                $("#modalDelete").fadeIn(800).css("display", "block");
+                $("#overlay").css("background-color", "rgba(0,0,0,0.2)").css("pointer-events", "none");
+                $("#DeleteTripButton").val(id);
+            }
+
+        function DeclineButtonClick(id) {
+            window.location.href = "@Url.Action("ApplicationDeclineReason", "Weryfikacja")?id="+id;
+        }
+
+        function ModalButtonClick(decision) {
+            id = parseInt($("#DeleteTripButton").attr("value"));
+            $("#modalDelete").css("display", "none");
+            $("#overlay").css("background-color", "rgba(0,0,0,0)").css("pointer-events", "all");
+
+            if (decision) DeleteTripStartClick(id);
+        }
+
+        function DeleteTripStartClick(id) {
+            window.location.href = "@Url.Action("DeleteConfirm", "Wycieczka")?tripNumber=" + id;
+        }
+
+        function RouteButtonClick(tripNumber) {
+            window.location.href = "@Url.Action("DisplayRouteOnMap", "Wycieczka")?tripNumber=" + tripNumber + "&callerController='Wycieczka'&callerAction='Delete'";
+        }
+    </script>
+}

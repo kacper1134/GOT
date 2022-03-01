@@ -1,0 +1,506 @@
+﻿@using GOT.ViewModels
+@model RouteViewModel
+
+@{
+    ViewData["Title"] = "Mapa";
+
+    if (!ViewData.ContainsKey("message"))
+    {
+        ViewData["message"] = "";
+    }
+}
+
+<html>  
+    <head>
+        <link rel="stylesheet" href="~/css/site.css"/>
+        <link rel="stylesheet" href="~/css/map.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css"/>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <div class="modal" tabindex="-1" role="dialog" id="add-route-form" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content default-form">
+                    <div class="modal-header">
+                        <p>Dodaj nowy odcinek</p>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="create-form" method="post" asp-action="CreateNewRoute" enctype="multipart/form-data">
+                            <div class="input-line">
+                                <label>Punkt początkowy:
+                                    <input id="beginning" asp-for="Punkt_Poczatkowy" list="points" placeholder="Podaj punkt początkowy" autocomplete="off" oninput="SelectSuggestionsForUser(this)" required/>
+                                </label>
+                                <datalist id="points">
+                                </datalist>
+                            </div>
+                            <div class="input-line">
+                                <label>Punkt końcowy:  
+                                    <input id="ending" asp-for="Punkt_Koncowy" list="points" placeholder="Podaj punkt końcowy" autocomplete="off" oninput="SelectSuggestionsForUser(this)" required/>
+                                </label>
+                                <datalist id="points">
+                                </datalist>
+                            </div>
+                             <div class="input-line">
+                                <p>Długość</p>
+                                <input id="length" type="number" asp-for="Dlugosc" placeholder="Długość odcinka w metrach" min="1" required/>
+                            </div>
+                             <div class="input-line">
+                                <p>Podejście</p>
+                                <input id="height" type="number" asp-for="Podejscie" placeholder="Podejście w metrach" min="1" required/>
+                            </div>
+                            <div class="input-line">
+                                <p>Punkty GOT:</p>
+                                <input id="points" class="numeric-input" asp-for="Punkty_GOT" type="number" min="1" max="50" placeholder="Podaj liczbę punktów" required/>
+                            </div>
+                            <div class="input-line">
+                                <p>Kolor:</p>
+                                <select id="color" asp-for="Kolor" style="color: #FF2400" onchange="SetColorForSelect(this)">
+                                    <option value="0" style="color: #FF2400" selected>Czerwony</option>
+                                    <option value="1" style="color: #3F37C9">Niebieski</option>
+                                    <option value="2" style="color: #F9C74F">Żółty</option>
+                                    <option value="3" style="color: #32CD32">Zielony</option>
+                                    <option value="4" style="color: #000000">Czarny</option>
+                                </select>
+                            </div>
+                            <div class = "input-line">
+                                <div class="pretty p-switch p-fill">
+                                    <input id="direction" asp-for="Dwukierunkowy" type="checkbox"/>
+                                    <div class="state p-success">
+                                        <label>Dwukierunkowy</label>
+                                    </div>
+                                </div>
+                                <div class="pretty p-switch p-fill">
+                                    <input id="closed" asp-for="Zamkniety" type="checkbox" />
+                                    <div class="state p-success">
+                                        <label>Zamknięty</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="button-row">
+                                <div class="file-input">
+                                    <input asp-for="Zdjecie" type="file" id="image" accept="image/*" onchange="ConfirmFileSelection(this)"/>
+                                    <label id="image-label" for="image">Wybierz zdjęcie</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="standard-button" id="submit-button">Dodaj nowy odcinek</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="message" class="modal" tabindex="-1" role="dialog" data-backdrop="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content message-popup">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="message-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" tabindex="-1" role="dialog" id="modify-route-form" aria-hidden="true" data-backdrop="false">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div id="modify-route-content" class="modal-content default-form">
+                    <div class="modal-header">
+                        <p id="modify-form-title"></p>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="modify-form" method="post" enctype="multipart/form-data">
+                            <input id="modify-form-beginning" type="hidden" asp-for="Punkt_Poczatkowy"/>
+                            <input id="modify-form-ending" type="hidden" asp-for="Punkt_Koncowy"/>
+                            <input id="modify-form-photo-name" type="hidden" asp-for="NazwaZdjecia"/>
+                             <div class="input-line">
+                                <p>Długość</p>
+                                <input id="modify-form-length" type="number" asp-for="Dlugosc" placeholder="Długość odcinka w metrach" min="1" required/>
+                            </div>
+                             <div class="input-line">
+                                <p>Podejście</p>
+                                <input id="modify-form-height" type="number" asp-for="Podejscie" placeholder="Podejście w metrach" min="1" required/>
+                            </div>
+                            <div class="input-line">
+                                <p>Punkty GOT:</p>
+                                <input id="modify-form-points" class="numeric-input" asp-for="Punkty_GOT" type="number" min="1" max="50" placeholder="Podaj liczbę punktów" required/>
+                            </div>
+                            <div class="input-line">
+                                <p>Kolor:</p>
+                                <select id="modify-form-color" asp-for="Kolor" onchange="SetColorForSelect(this)">
+                                    <option value="0" style="color: #FF2400">Czerwony</option>
+                                    <option value="1" style="color: #3F37C9">Niebieski</option>
+                                    <option value="2" style="color: #F9C74F">Żółty</option>
+                                    <option value="3" style="color: #32CD32">Zielony</option>
+                                    <option value="4" style="color: #000000">Czarny</option>
+                                </select>
+                            </div>
+                            <div class = "input-line">
+                                <div class="pretty p-switch p-fill">
+                                    <input id="modify-form-direction" asp-for="Dwukierunkowy" type="checkbox"/>
+                                    <div class="state p-success">
+                                        <label>Dwukierunkowy</label>
+                                    </div>
+                                </div>
+                                <div class="pretty p-switch p-fill">
+                                    <input id="modify-form-closed" asp-for="Zamkniety" type="checkbox" />
+                                    <div class="state p-success">
+                                        <label>Zamknięty</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="button-row">
+                                <div class="file-input">
+                                    <input asp-for="Zdjecie" type="file" id="modify-image" accept="image/*" onchange="ConfirmFileSelection(this)"/>
+                                    <label id="modify-image-label" for="modify-image">Wybierz zdjęcie</label>
+                                </div>
+                            </div>
+                            <div id="modify-buttons-row" class="button-row">
+                                <button type="submit" class="standard-button" id="button-submit" onclick="ModifyExistingRoute()">Modyfikuj odcinek</button>
+                                <button type="submit" class="standard-button" id="button-delete" onclick="DeleteExistingRoute()">Usuń odcinek</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+
+</html>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js" integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn" crossorigin="anonymous"></script>
+    <script>
+        var points = @Html.Raw(ViewData["serialized-points"]);
+        var routes = @Html.Raw(ViewData["serialized-routes"]);
+        var map;
+        var mapRoutes = new Array();
+
+        function initMap() {
+            var location = new google.maps.LatLng(50.76, 15.73);
+            var mapProperties = {center: location, zoom: 10, scrollwheel: true, draggable: true, disableDefaultUI: true, mapTypeId: 'terrain', minZoom: 6, maxZoom: 15};
+            map = new google.maps.Map(document.getElementById("map"), mapProperties);
+            var markers = new Array(points.length);
+
+            const markerIcon = "images/point.png";
+
+            for (const index in points) {
+                let point = points[index];
+
+                location = new google.maps.LatLng(point.Szerokosc_Geograficzna, point.Dlugosc_Geograficzna);
+
+                if (point.Zdjecie === null) {
+                    point.Zdjecie = "default.jpg";
+                }
+
+                markers[index] = new google.maps.Marker({
+                    position: location,
+                    icon: markerIcon
+                });
+                markers[index].setMap(map);
+
+                const infoWindow = new google.maps.InfoWindow({
+                content:
+                `
+                <div>
+                <div id="dialog-coordinates" style="color: #AAAAAA">${point.Szerokosc_Geograficzna}&#176; N, ${point.Dlugosc_Geograficzna}&#176; E - ${point.Wysokosc} m n.p.m.</div>
+                <h3 style="color: #439D73; text-align: center;">${point.Nazwa}</h3>
+                <img id="dialog-image" src="images/${point.Zdjecie}">
+                </div>
+                `
+                });
+
+                markers[index].addListener("click", () => {
+                    infoWindow.open({
+                        anchor: markers[index],
+                        map,
+                        shouldFocus: false
+                    });
+                });
+            }
+
+            for(const index in routes) {
+                let route = routes[index];
+                let beginning = points.filter((point) => {return point.Numer === route.Numer_Punktu_Poczatkowego})[0];
+                let ending = points.filter((point) => {return point.Numer === route.Numer_Punktu_Koncowego})[0];
+
+                const coordinates = [
+                    {lat: beginning.Szerokosc_Geograficzna, lng: beginning.Dlugosc_Geograficzna},
+                    {lat: ending.Szerokosc_Geograficzna, lng: ending.Dlugosc_Geograficzna},
+                ];
+
+                const routeColor = GetColorForRouteType(route.Kolor);
+
+                const dash = {
+                    path: 'M 0, -1 0, 1',
+                    strokeOpacity: 1,
+                    scale: 4
+                }
+
+                const mapRoute = new google.maps.Polyline({
+                    path: coordinates,
+                    geodesic: true,
+                    strokeColor: routeColor,
+                    strokeOpacity: 0,
+                    strokeWeight: 100,
+                    icons: [{
+                        icon: dash,
+                        offset: '0',
+                        repeat: '20px'
+                    }]
+                });
+
+                mapRoute.addListener("click", () => {
+                    $.getJSON('@Url.Action("GetRouteDataByIdentifier", "Map")',{routeNumber: route.Numer},function(data, status) {
+
+                        $('#modify-form-beginning').val(data.punkt_Poczatkowy);
+                        $('#modify-form-ending').val(data.punkt_Koncowy);
+                        $('#modify-form-photo-name').val(data.nazwaZdjecia);
+                        $('#modify-route-content').css('background-image', 'url(' + data.nazwaZdjecia + ')');
+                        $('#modify-form-title').text(data.punkt_Poczatkowy + " - " + data.punkt_Koncowy);
+                        $('#modify-form-length').val(data.dlugosc);
+                        $('#modify-form-height').val(data.podejscie);
+                        $('#modify-form-points').val(data.punkty_GOT);
+                        $('#modify-form-color').val(data.kolor);
+                        $('#modify-form-color').css("color", GetColorForRouteType(data.kolor));
+                        $('#modify-form-direction').prop('checked', data.dwukierunkowy === "on");
+                        $("#modify-form-closed").prop("checked", data.zamkniety === "on");
+
+                        $("#modify-route-form").modal('show');
+                    });
+                });
+
+                mapRoutes[route.Numer] = mapRoute;
+
+                mapRoute.setMap(map);
+            }
+
+            var addRouteButton = AddRouteButton(document.createElement("button"));
+
+            map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(addRouteButton);
+
+            map.zoom_changed = function() {
+                for (const index in markers) {
+                    let marker = markers[index];
+
+                    if (map.getZoom() < 9) {
+                        marker.setVisible(false);
+                    } else {
+                        marker.setVisible(true);
+                    }
+                }
+
+                for (const index in mapRoutes) {
+                    let mapRoute = mapRoutes[index];
+
+                    if (map.getZoom() < 9) {
+                        mapRoute.setVisible(false);
+                    } else {
+                        mapRoute.setVisible(true);
+                    }
+                }
+            }
+        }
+
+        function AddRouteToMap(route) {
+            const coordinates = [
+                    {lat: route["Punkt_Poczatkowy"]["Szerokosc_Geograficzna"], lng: route["Punkt_Poczatkowy"]["Dlugosc_Geograficzna"]},
+                    {lat: route["Punkt_Koncowy"]["Szerokosc_Geograficzna"], lng: route["Punkt_Koncowy"]["Dlugosc_Geograficzna"]},
+                ];
+
+            const routeColor = GetColorForRouteType(route["Kolor"]);
+
+            const dash = {
+                    path: 'M 0, -1 0, 1',
+                    strokeOpacity: 1,
+                    scale: 4
+                }
+
+            const mapRoute = new google.maps.Polyline({
+                    path: coordinates,
+                    geodesic: true,
+                    strokeColor: routeColor,
+                    strokeOpacity: 0,
+                    strokeWeight: 100,
+                    icons: [{
+                        icon: dash,
+                        offset: '0',
+                        repeat: '20px'
+                    }]
+                });
+
+           mapRoute.addListener("click", () => {
+                $.getJSON('@Url.Action("GetRouteDataByIdentifier", "Map")',{routeNumber: route["Numer"]},function(data, status) {
+
+                  $('#modify-form-beginning').val(data.punkt_Poczatkowy);
+                  $('#modify-form-ending').val(data.punkt_Koncowy);
+                  $('#modify-form-photo-name').val(data.nazwaZdjecia);
+                  $('#modify-route-content').css('background-image', 'url(' + data.nazwaZdjecia + ')');
+                  $('#modify-form-title').text(data.punkt_Poczatkowy + " - " + data.punkt_Koncowy);
+                  $('#modify-form-length').val(data.dlugosc);
+                  $('#modify-form-height').val(data.podejscie);
+                  $('#modify-form-points').val(data.punkty_GOT);
+                  $('#modify-form-color').val(data.kolor);
+                  $('#modify-form-color').css("color", GetColorForRouteType(data.kolor));
+                  $('#modify-form-direction').prop('checked', data.dwukierunkowy === "on");
+                  $("#modify-form-closed").prop("checked", data.zamkniety === "on");
+
+                  $("#modify-route-form").modal('show');
+                    });
+                });
+
+                mapRoute.setMap(map);
+
+                mapRoutes[route["Numer"]] = mapRoute;
+        }
+
+        function GetColorForRouteType(routeType) {
+            switch(routeType) {
+                case 0:
+                    return "#FF2400";
+                case 1:
+                    return "#3F37C9";
+                case 2:
+                    return "#F9C74F";
+                case 3:
+                    return "#32CD32";
+                case 4:
+                    return "#000000";
+                default:
+                    return "#777777";
+            }
+        }
+
+        function AddRouteButton(routeButton) {
+            routeButton.classList.add("standard-button");
+
+            routeButton.innerText = "Dodaj nowy odcinek";
+
+            routeButton.setAttribute("data-toggle", "modal");
+            routeButton.setAttribute("data-target", "#add-route-form");
+            routeButton.setAttribute("data-backdrop", "false");
+
+            return routeButton;
+        }
+
+        let SetColorForSelect = function(select) {
+
+            let selectedColor = select.options[select.value].style.color;
+
+            $(select).css("color", selectedColor);
+        }
+
+        let SelectSuggestionsForUser = function(input) {
+            let userInput = $(input).val();
+
+            $("#points").empty();
+
+            if (userInput.length > 1) {
+                let matchingPoints = findMatchingPoints(userInput);
+
+                matchingPoints.forEach(function(pointName) {
+
+                    let option = document.createElement("option");
+                    option.value = pointName;
+                    $("#points").append(option);
+                });
+            }
+        }
+
+        let findMatchingPoints = function(text) {
+            return points.map(point => point.Nazwa)
+            .filter(name => name.toLowerCase().includes(text.toLowerCase()));
+        }
+
+        let ConfirmFileSelection = function(caller) {
+            let identifier = $(caller).attr('id');
+            
+            $(`#${identifier}-label`).text("Wybrano zdjęcie");
+        }
+
+
+        window.onload = function() {
+            $("#points").empty();
+        }
+
+        $(document).ready(function () {
+
+            let options = {
+                success: successCallback,
+                error: showStatus
+            };
+
+            $("#create-form").ajaxForm(options);
+        });
+
+        let successCallback = function(responseText, statusText, xhr, $form) {
+            
+            $.getJSON('@Url.Action("GetRouteData", "Map")',{beginning: $("#beginning").val(), ending: $("#ending").val()},function(data, status) {
+                AddRouteToMap(JSON.parse(data));
+            });
+
+            showStatus(responseText, statusText, xhr, $form);
+        }
+
+        let showStatus = function(responseText, statusText, xhr, $form) {
+             $('#add-route-form').modal('hide');
+             $('#modify-route-form').modal('hide');
+             $('#message-text').text(responseText);
+             $('#message').modal('show');
+        };
+
+        function ModifyExistingRoute() {
+            let form = $("#modify-form");
+
+
+            let options = {
+                success: ModifyRouteColor,
+                error: showStatus,
+                url: '@Url.Action("ModifyExistingRoute", "Map")'
+            };
+
+            form.ajaxForm(options);
+        }
+
+        function ModifyRouteColor(responseText, statusText, xhr, $form) {
+
+            $.getJSON('@Url.Action("GetRouteData", "Map")', {beginning: $("#modify-form-beginning").val(), ending: $("#modify-form-ending").val()}, function(data, status) {
+
+                mapRoutes[JSON.parse(data)["Numer"]].setOptions({strokeColor: GetColorForRouteType(JSON.parse(data)["Kolor"])});
+            });
+
+            showStatus(responseText, statusText, xhr, $form);
+        }
+
+        function DeleteExistingRoute() {
+            let form = $("#modify-form");
+
+            let options = {
+                beforeSubmit: DeleteRoute,
+                success: showStatus,
+                error: showStatus,
+                url: '@Url.Action("DeleteExistingRoute","Map")'
+            }
+
+            form.ajaxForm(options);
+        }
+
+        function DeleteRoute(responseText, statusText, xhr, $form) {
+            $.getJSON('@Url.Action("GetRouteData", "Map")', {beginning: $("#modify-form-beginning").val(), ending: $("#modify-form-ending").val()}, function(data, status) {
+
+                mapRoutes[JSON.parse(data)["Numer"]].setMap(null);
+            });
+        }
+
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpRI3hcuVN05u48uFMYYmSU3p34_wLgNY&callback=initMap">
+    </script>
+}

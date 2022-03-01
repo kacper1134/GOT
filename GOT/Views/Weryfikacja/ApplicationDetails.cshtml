@@ -1,0 +1,102 @@
+﻿@model Weryfikacja;
+@using GOT.Models;
+@using GOT.Data.Services;
+@inject IWeryfikacjaService weryfikacjaService;
+
+@{
+    ViewData["Title"] = "Verification Home Page";
+    var tripSegments = ViewData["TripSegments"] as List<Odcinek>;
+    var i = 1;
+    var arrow = " -> ";
+    var enter = "\n";
+    var bracket = ") ";
+    var points = " punktów";
+    var space = " ";
+}
+
+<div class="content-container">
+    <div id="overlay">
+    <div class="verification-details-container">
+            <h1>@ViewData["ApplicationTitle"]</h1>
+            <p>
+                W dniach od <span class="special-text">@ViewData["TripStartDate"]</span> do <span class="special-text">@ViewData["TripEndDate"]</span> turysta odbył wycieczkę na obszarze <span class="special-text">@tripSegments[0].Punkt_Poczatkowy.NazwaGrupyGorskiej,</span>
+                za którą przyznano <span class="special-text">@weryfikacjaService.GetPointsForEntry(Model.Wpis.Numer) punktów.</span>
+            </p>
+
+            <div class="route-segments" style="font-size: 13px;">
+                <h1>Trasa wycieczki</h1>
+                <textarea disabled class="segments">
+                @foreach (var segment in tripSegments)
+                {
+                    @i; @bracket; @segment.Punkt_Poczatkowy.Nazwa; @arrow; @segment.Punkt_Koncowy.Nazwa; @space @segment.Punkty @points @enter;
+
+                    i = i + 1;
+                }
+                </textarea>
+                <button class="route-button" onclick="RouteButtonClick(@Model.Wpis.Numer_Wycieczki, @Model.Numer_Wpisu)">Pokaż na mapie</button>
+            </div>
+            
+            @using (Html.BeginForm("DownloadZipFile", "Weryfikacja", FormMethod.Post))
+            {
+                <input hidden name="id" value="@Model.Numer_Wpisu"/>
+                <button id="download-button">
+                <img src="~/images/Download.png" width=50 height=50 />
+                </button>
+            }
+            <span id="download-text">Dowód turysty</span>
+
+            <button class="verification-button" id="accept-button" onclick="AcceptButtonClick(@Model.Numer_Wpisu)">Przyjmij</button>
+            <button class="verification-button" id="discard-button" onclick="DeclineButtonClick(@Model.Numer_Wpisu)">Odrzuć</button>
+            <button class="verification-button" id="cancel-button" onclick="CancelButtonClick()">Anuluj</button>
+        </div>
+    </div>
+    <div class="my-modal" id="modalAccept">
+        <div class="my-modal-body">
+            <p style="margin:0">Wniosek zostanie przyjęty.</p>
+            <p style="margin:0">Czy potwierdzasz swoją decyzję?</p>
+        </div>
+
+        <button id="ConfirmButton" class="modalLeftButton modalButton" onclick="ModalButtonClick(true)">Tak</button>
+        <button class="modalRightButton modalButton" onclick="ModalButtonClick(false)">Nie</button>
+
+    </div>
+
+</div>
+
+
+@section Scripts 
+{
+    <script>
+        function CancelButtonClick() {
+            window.location.href = "@Url.Action("Index", "Weryfikacja")?pageNumber=1";
+        }
+
+        function AcceptButtonClick(id) {
+                $("#modalAccept").fadeIn(800).css("display", "block");
+                $("#overlay").css("background-color", "rgba(0,0,0,0.2)").css("pointer-events", "none");
+                $("#accept-button").val(id);
+            }
+
+        function DeclineButtonClick(id) {
+            window.location.href = "@Url.Action("ApplicationDeclineReason", "Weryfikacja")?id="+id;
+        }
+
+        function ModalButtonClick(decision) {
+            id = parseInt($("#accept-button").attr("value"));
+            $("#modalAccept").css("display", "none");
+            $("#overlay").css("background-color", "rgba(0,0,0,0)").css("pointer-events", "all");
+
+            if (decision) VerficationStartClick(id);
+        }
+
+        function VerficationStartClick(id) {
+            window.location.href = "@Url.Action("ApplicationAcceptUpdate", "Weryfikacja")?id=" + id;
+        }
+
+        function RouteButtonClick(tripNumber, verificationNumber) {
+            window.location.href = "@Url.Action("DisplayRouteOnMap", "Wycieczka")?tripNumber=" + tripNumber + "&callerController='Weryfikacja'&callerAction='ApplicationDetails'&verificationNumber=" + verificationNumber;
+        }
+
+    </script>
+}
+

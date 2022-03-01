@@ -1,0 +1,9 @@
+﻿#DeleteTripButton{
+    margin-top: 50px;
+    font-weight: 700;
+    border-radius: 20px;
+    border: none;
+    width: 60%;
+    height: 40px;
+    transform: translate(-35%, 0);
+}

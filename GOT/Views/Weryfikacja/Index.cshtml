@@ -1,0 +1,148 @@
+﻿@model IEnumerable<GOT.Models.Weryfikacja>
+@using GOT.Models.Enums 
+@using System.Collections.Generic;
+
+@{
+    ViewData["Title"] = "Verification Home Page";
+    var titlesList = ViewData["Titles"] as List<string>;
+    var i = 0;
+    var filterOption = ViewData["filterOptionNumber"].ToString();
+    var orderOption = ViewData["orderOptionNumber"].ToString();
+}
+
+<div class="content-container">
+    <div id="overlay">
+        <h1>Wnioski</h1>
+        <p style="padding-left: 20px; float: left;">
+            Filtruj:
+            <select id="FilterList" asp-items="Html.GetEnumSelectList<Status>()" asp-for="@filterOption" onchange="FilterListClick()">
+                <option value="3">Pokaż Wszystkie</option>
+            </select>
+        </p>
+
+        <p style="padding-right: 20px; float:right;">
+            Sortuj:
+            <select id="OrderList" asp-for="@orderOption" onchange="OrderListClick()">
+                <option selected value="1">Od najnowszych</option>
+                <option value="2">Od najstarszych</option>
+            </select>
+        </p>
+
+        @foreach (var item in Model)
+        {
+            var statusId = (int)item.Status;
+
+            <div class="application-container">
+                <div class="application-text-container" style="border-color:  @Weryfikacja.BorderColorForStatus(@item.Status)">
+                    <p>
+                        @titlesList[i]
+                        <br />
+                        @item.GetDateInformation()
+                    </p>
+                </div>
+
+                <button class="application-button-container" style="border-color:  @Weryfikacja.BorderColorForStatus(@item.Status)" onclick="VerificationButtonClick(@item.Numer_Wpisu, @statusId)">
+                    Rozpatrz
+                </button>
+            </div>
+            i += 1;
+        }
+
+        <p style="padding-top:40px; font-size: 20px; color: red">@ViewData["NoApplications"]</p>
+
+        <div class="pageChanger">
+
+            <form method="post">
+                <a onclick="LeftBracketClick()"><</a>
+                <button id="Button1" class="pageChangerCircle" name="pageNumber" value=@ViewData["CurrentPageNumber"]>@ViewData["CurrentPageNumber"]</button>
+                <button id="Button2" class="pageChangerCircle" name="pageNumber" value=@ViewData["NextPageNumber"]>@ViewData["NextPageNumber"]</button>
+                <button class="pageChangerCircle" disabled>...</button>
+                <button id="Button3" class="pageChangerCircle" name="pageNumber" value=@ViewData["MaxPageNumber"]>@ViewData["MaxPageNumber"]</button>
+                <a onclick="RightBracketClick()">></a>
+            </form>
+        </div>
+    </div>
+    <div class="my-modal" id="modalVerification">
+        <div class="my-modal-body">
+            Próbujesz rozpatrzyć już rozpatrzony wniosek.
+            Czy chcesz zmienić swoją decyzję?
+        </div>
+
+        <button id="ConfirmButton" class="modalLeftButton modalButton" onclick="ModalButtonClick(true)">Tak</button>
+        <button class="modalRightButton modalButton" onclick="ModalButtonClick(false)">Nie</button>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+
+        function LeftBracketClick() {
+
+            var number = parseInt(document.getElementById("Button1").textContent);
+            var nextNumber = parseInt(document.getElementById("Button2").textContent);
+
+            number = Math.max(number - 1, 1);
+            nextNumber = Math.min(number + 1, nextNumber);
+
+            $("#Button1").text(number);
+            $("#Button1").val(number);
+
+            $("#Button2").text(nextNumber);
+            $("#Button2").val(nextNumber);
+        }
+
+        function RightBracketClick() {
+
+            var number = parseInt(document.getElementById("Button1").textContent);
+            var nextNumber = parseInt(document.getElementById("Button2").textContent);
+            var maxNumber = parseInt(document.getElementById("Button3").textContent);
+
+            number = Math.min(number + 1, (Math.max(maxNumber - 2, 1)));
+            nextNumber = Math.max(Math.min(number + 1, (Math.max(maxNumber - 1, 1))), nextNumber);
+
+            $("#Button1").text(number);
+            $("#Button1").val(number);
+
+            $("#Button2").text(nextNumber);
+            $("#Button2").val(nextNumber);
+        }
+
+        function FilterListClick() {
+            var selectFilter = document.getElementById("FilterList");
+            var selectOrder = document.getElementById("OrderList");
+            window.location.href = "@Url.Action("Index", "Weryfikacja")?pageNumber=1" + "&filterOption=" + selectFilter.options[selectFilter.selectedIndex].value
+                + "&orderOption=" + selectOrder.options[selectOrder.selectedIndex].value;
+        }
+
+        function OrderListClick() {
+            var selectFilter = document.getElementById("FilterList");
+            var selectOrder = document.getElementById("OrderList");
+            window.location.href = "@Url.Action("Index", "Weryfikacja")?pageNumber=1" + "&filterOption=" + selectFilter.options[selectFilter.selectedIndex].value
+                + "&orderOption=" + selectOrder.options[selectOrder.selectedIndex].value;
+        }
+
+        function VerificationButtonClick(id, status) {
+            if (status == 2) VerficationStartClick(id);
+            else {
+                $("#modalVerification").fadeIn(800).css("display", "block");
+                $("#overlay").css("background-color", "rgba(0,0,0,0.2)").css("pointer-events", "none");
+                $("#ConfirmButton").val(id);
+            }
+        }
+
+        function ModalButtonClick(decision) {
+            id = parseInt($("#ConfirmButton").attr("value"));
+            $("#modalVerification").css("display", "none");
+            $("#overlay").css("background-color", "rgba(0,0,0,0)").css("pointer-events", "all");
+
+            if (decision) VerficationStartClick(id);
+        }
+
+        function VerficationStartClick(id) {
+            window.location.href = "@Url.Action("ApplicationDetails", "Weryfikacja")?id=" + id;
+        }
+    </script>
+}
+

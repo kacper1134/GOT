@@ -1,0 +1,154 @@
+﻿@using GOT.ViewModels
+@model IEnumerable<HistoriaWycieczekViewModel>
+
+@{
+    ViewData["Title"] = "Historia Wycieczek";
+    SelectList filterOptions = (SelectList)ViewData["filter-options"];
+    SelectList sortingOptions = (SelectList)ViewData["sorting-options"];
+    int currentPageNumber = int.Parse(ViewData["current-page-number"].ToString());
+    int nextPageNumber = currentPageNumber + 1;
+    int lastPageNumber = int.Parse(ViewData["last-page-number"].ToString());
+    string filterOption = ViewData["filter-option"].ToString();
+    string sortingOption = ViewData["sorting-option"].ToString();
+}
+<html>
+    <head>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="css/site.css"/>
+        <link rel="stylesheet" href="css/HistoriaWycieczek.css"/>
+        <link rel="stylesheet" href="css/navbar.css"/>
+    </head>
+    <body>
+        <div class="content-container" style="height: 800px;">
+            <h1>Wycieczki</h1>
+            <p style="padding-left: 20px; float: left;">
+                Filtruj:
+                <select id="filter-list" asp-items="@filterOptions" asp-for="@filterOption" onchange="FilterCriteriaChange()"></select>
+            </p>
+            <p style="padding-right: 20px; float:right;">
+                Sortuj:
+                <select id="sorting-list" asp-items="@sortingOptions" asp-for="@sortingOption" onchange="SortingCriteriaChange()"></select>
+            </p>
+            <div class="trips">
+                @foreach(var item in Model) {
+                <div class="container">
+                    <div class="row main-section" style="margin-top: 30px;">
+                        <div class="col-6">
+                            <div class="trip-route">@item.Trasa_Wycieczki</div>
+                            <div>@item.Przyznane_Punkty - @item.Region_Wycieczki</div>
+                            <div>@item.Data_Ukonczenia_Wycieczki.ToLongDateString()</div>
+                            <div class="row embedded-row">
+                                <button id="details-button" onclick="ShowDetails(@item.Numer_Wpisu)">Szczegóły</button>
+                                <p style="color: @Weryfikacja.BorderColorForStatus(@item.Status_Weryfikacji)">@item.Status_Weryfikacji</p>
+                            </div>
+                        </div>
+                        <img class="col-6 trip-image" src="images/@item.Zdjecie_Poczatkowe">
+                    </div>
+                </div>
+                }
+            </div>
+        @if (Model.Count() == 0)
+        {
+            <p id="empty-history-message">Nic tu na razie nie ma...</p>
+        }
+        else {
+            <div class="pageChanger">
+                <form method="post">
+                    <a onclick="LeftBracketClick()" id="left-bracket">&lt;</a>
+                    <button class="pageChangerCircle" id="current-page-button" name="pageNumber" value="@currentPageNumber">@currentPageNumber</button>
+                    <button class="pageChangerCircle" id="next-page-button" name="pageNumber" value="@nextPageNumber">@nextPageNumber</button>
+                    <button class="pageChangerCircle" id="dots-button" disabled>...</button>
+                    <button class="pageChangerCircle" id="last-page-button" name="pageNumber" value="@lastPageNumber">@lastPageNumber</button>
+                    <a onclick="RightBracketClick()" id="right-bracket">&gt;</a>
+                </form>
+            </div>
+        }
+        </div>
+    </body>
+</html>
+
+@section Scripts {
+    <script>
+
+        var LeftBracketClick = function() {
+            var filterOption = $("#filter-list").val();
+            var sortingOption = $("#sorting-list").val();
+
+            var currentPageNumber = parseInt($("#current-page-button").text());
+            
+            var previousPageNumber = Math.max(currentPageNumber - 1, 1);
+
+            $("#current-page-button").val(previousPageNumber);
+            $("#current-page-button").text(previousPageNumber);
+
+            console.log($("#current-page-button").css("display"));
+
+            if (previousPageNumber !== currentPageNumber) {
+                $("#next-page-button").val(currentPageNumber);
+                $("#next-page-button").text(currentPageNumber);
+                window.location.href = "@Url.Action("Index", "HistoriaWycieczek")?pageNumber=" + previousPageNumber + "&filterOption=" + filterOption + "&sortingOption=" + sortingOption;
+            }
+        }
+
+        var RightBracketClick = function() {
+            var filterOption = $("#filter-list").val();
+            var sortingOption = $("#sorting-list").val();
+
+            var currentPageNumber = parseInt($("#current-page-button").text());
+            var lastPageNumber = parseInt($("#last-page-button").text());
+
+            console.log(lastPageNumber);
+
+            var nextPageNumber = Math.min(currentPageNumber + 1, lastPageNumber);
+
+            $("#current-page-button").val(nextPageNumber);
+            $("#current-page-button").text(nextPageNumber);
+            
+            if (currentPageNumber != lastPageNumber) {
+                window.location.href = "@Url.Action("Index", "HistoriaWycieczek")?pageNumber=" + nextPageNumber + "&filterOption=" + filterOption + "&sortingOption=" + sortingOption;
+            }
+        }
+
+        var FilterCriteriaChange = function() {
+            var filterOption = $("#filter-list").val();
+            var sortingOption = $("#sorting-list").val();
+
+            window.location.href = "@Url.Action("Index", "HistoriaWycieczek")?pageNumber=1" + "&filterOption=" + filterOption + "&sortingOption=" + sortingOption;
+        }
+
+        var SortingCriteriaChange = function() {
+            var filterOption = $("#filter-list").val();
+            var sortingOption = $("#sorting-list").val();
+
+            window.location.href = "@Url.Action("Index", "HistoriaWycieczek")?pageNumber=1" + "&filterOption=" + filterOption + "&sortingOption=" + sortingOption;
+        }
+
+        var ShowDetails = function(entryNumber) {
+            window.location.href = "@Url.Action("Details", "HistoriaWycieczek")?entryNumber=" + entryNumber;
+        }
+
+        window.onload = function() {
+            var currentPageNumber = parseInt($("#current-page-button").text());
+            var lastPageNumber = parseInt($("#last-page-button").text());
+
+            if (currentPageNumber + 2 >= lastPageNumber) {
+                $("#dots-button").css("display", "none");
+                
+                if (currentPageNumber + 1 >= lastPageNumber) {
+                    $("#last-page-button").css("display", "none");
+                }
+
+                if (currentPageNumber === lastPageNumber) {
+                    console.log(lastPageNumber);
+                    $("#next-page-button").css("display", "none");
+                    $("#right-bracket").css("display", "none");
+                }
+            } 
+            
+            if (currentPageNumber === 1) {
+                $("#left-bracket").css("display", "none");
+            }
+        }
+
+    </script>
+}

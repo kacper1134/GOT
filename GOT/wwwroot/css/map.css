@@ -1,0 +1,241 @@
+﻿.main {
+    background: none;
+}
+
+
+#map {
+    width: inherit;
+    height: inherit;
+}
+
+main {
+    height: 100%;
+}
+
+.pb-3 {
+    padding-bottom: 0px !important;
+}
+
+#dialog-image {
+    width: 400px;
+    height: 220px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+#dialog-coordinates {
+    text-align: center;
+    padding: 8px 0;
+}
+
+.gm-style, .gm-style-iw-c, .gm-style-iw-d {
+    padding: 0px !important;
+    overflow: hidden !important;
+}
+
+.gmnoprint, .gm-style-cc {
+    display: none !important;
+}
+
+.modal-header {
+    text-align: center;
+}
+
+.modal-header > p {
+    margin: auto;
+    font-size: 28px;
+    font-family: Roboto, sans-serif;
+    color: #188C48;
+}
+
+.modal-content {
+    margin-top: 60px;
+}
+
+.default-form {
+    background-image: url("../images/form-background.jpg");
+    border-radius: 20px;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center center;
+    background-attachment: fixed;
+    min-height: 600px;
+    height: 80vh;
+    max-height: 900px;
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-body {
+    margin-left: 20px;
+    margin-right: 20px;
+    height: 80%;
+}
+
+.close {
+    text-align: left;
+    font-size: 40px !important;
+    width: 40px;
+    padding: 16px 0 16px 0 !important;
+    color: #B92E34;
+}
+
+.close:hover {
+    color: #B92E34;
+}
+
+.input-line {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    margin-bottom: 10px;
+}
+
+.input-line > p, label {
+     color: #26DA71;
+     font-size: 24px;
+     line-height: 24px;
+     font-family: Roboto, sans-serif;
+     width: 210px;
+}
+
+.input-line > input, select, label > input {
+    margin-bottom: 18px;
+    margin-left: 24px;
+    flex: 1 1;
+    text-align: center;
+    border: none;
+    border-radius: 10px;
+    color: #188C48;
+    background-color: #C2E5D3;
+    font-family: Roboto, sans-serif;
+}
+
+label > input {
+    font-size: 16px;
+}
+
+#ending {
+    margin-left: 59px;
+}
+
+input[type=text] {
+    background-image: url("../images/writing.png");
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.button-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.modal-content button {
+    font-size: 20px;
+    line-height: 20px;
+    height: 40px;
+}
+
+.button-row > button:nth-of-type(2) {
+    margin-right: 0;
+}
+
+form {
+    width: inherit;
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#submit-button {
+    position: absolute;
+    bottom: 10px;
+    width: 458px;
+}
+
+.form-checkbox-line{
+    display: flex;
+    flex-direction: column;
+}
+
+input[type=checkbox] {
+    margin: auto;
+}
+
+.state > label {
+    font-family: Roboto, sans-serif;
+    color: #26DA71;
+}
+
+input[type=file] {
+    opacity: 0;
+    width: 0.1px;
+    height: 0.1px;
+    position: absolute;
+}
+
+.file-input label {
+    width: 224px;
+    height: 40px;
+    line-height: 40px;
+    border-radius: 15px;
+    border: 1px solid #188C48;
+    background-color: #C2E5D3;
+    margin-right: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #188C48;
+    font-family: Roboto, sans-serif;
+    font-size: 20px;
+    user-select: none;
+    cursor: pointer;
+}
+
+label {
+    width: inherit;
+}
+
+label > input {
+    width: 224px;
+    height: 26px;
+}
+
+.pretty {
+    font-size: 24px;
+}
+
+.message-popup {
+    border-radius: 15px;
+    background-color: #C2E5D3;
+    color: #188C48;
+    font-size: 16px;
+    font-family: Roboto, sans-serif;
+    display: flex;
+    flex-direction: row;
+}
+
+.message-popup > .modal-body {
+    margin-top: 15px;
+}
+
+#modify-buttons-row {
+    position: absolute;
+    bottom: 10px;
+}
+
+#modify-buttons-row > button {
+    width: 222px;
+}

@@ -1,0 +1,12 @@
+﻿form > select {
+    width: 90%;
+    margin-top: 25px;
+    margin-left: 50%;
+    transform: translate(-50%, 0);
+}
+#submit-button{
+    background: green;
+    margin-left: 50%;
+    margin-top: 25px;
+    transform: translate(-50%, 0);
+}

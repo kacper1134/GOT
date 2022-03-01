@@ -1,0 +1,137 @@
+﻿nav {
+    background: #439D73;
+    display: flex;
+    flex-wrap: nowrap;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+}
+
+.nav-link {
+    width: inherit;
+}
+
+.logo {
+    padding: 10px;
+    flex: 0 0 55px;
+}
+
+nav > ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    float: right;
+    position: relative;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    flex: 1 1 1500px;
+    display: flex;
+}
+
+nav ul li {
+    float: left;
+    display: inline-block;
+    background: #439D73;
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 60px;
+    height: 100%;
+    -webkit-transition: 1s ease;
+    -moz-transition: 1s ease;
+    -o-transition: 1s ease;
+    min-width: 180px;
+    flex: 1 1 200px;
+}
+
+nav > ul > li:hover {
+    background: #188C48;
+    -webkit-transition: 1s ease;
+    -moz-transition: 1s ease;
+    -o-transition: 1s ease;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+nav > ul > li > a:hover {
+    text-decoration: none;
+    color: white;
+}
+
+nav > ul :hover > ul {
+    animation: fadeIn 1s;
+    display: flex;
+}
+
+nav ul ul {
+    position: absolute;
+    -webkit-transition: 1s ease;
+    -moz-transition: 1s ease;
+    -o-transition: 1s ease;
+    display: none;
+    flex-direction: column;
+    list-style: none;
+    padding-left: 0;
+}
+
+nav ul ul li {
+     position: relative;
+     font-size: 14px;
+     margin: 0;
+     height: 40px;
+     float: none;
+     display: list-item;
+     text-align: left;
+     line-height: 40px;
+     border: 2px solid #3A8463;
+     border-bottom: none;
+     flex: 0 0 40px;
+}
+
+nav > ul > li > ul :hover {
+    list-style-type: none;
+    text-decoration: none;
+    color: white;
+}
+
+nav ul li ul li :hover > #DotHorizontal {
+    visibility: visible;
+    animation: fadeIn 1s;
+}
+
+
+#Wycieczki {
+    border-bottom: 2px solid #3A8463;
+}
+
+#DotHorizontal {
+    margin-right: 10px;
+    visibility: hidden;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

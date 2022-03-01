@@ -1,0 +1,110 @@
+﻿@{
+    ViewData["Title"] = "Trip Create Page";
+
+    var tripSegments = ViewData["TripSegments"] as List<Odcinek>;
+    var i = 1;
+    var arrow = " -> ";
+    var enter = "\n";
+    var bracket = ") ";
+    var points = " punktów";
+    var space = " ";
+}
+
+<html>
+<head>
+    <link rel="stylesheet" href="~/css/TripDetailsPage.css" />
+    <link rel="stylesheet" href="~/css/TripCreatePage.css" />
+</head>
+<body onload="@ViewData["ErrorFunction"]">
+    <div class="content-container">
+        <div id="overlay">
+            <div class="trip-details-container">
+                <h1>Tworzenie nowej wycieczki</h1>
+                <form class="editTripFrom" method="post" asp-action="CreateConfirm">
+                    <input hidden name="routeNumber" value="@ViewData["RouteNumber"]" required/>
+
+                    <label class="control-label" for="startDate">Data początkowa</label>
+                    <input class="form-control" name="startDate" type="date" value="@ViewData["CurrentDate"]" min="@ViewData["CurrentDate"]"
+                           max="@ViewData["MaxData"]" required />
+
+                    <label class="control-label" for="tripDuration">Czas trwania&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <input id="dateInput" class="form-control" name="tripDuration" type="number" min="1" max="20" value="1" />
+                    <input type="submit" id="createTrip" hidden />
+                </form>
+
+                <div class="route-segments">
+                    <h1>Trasa wycieczki</h1>
+                    <textarea disabled class="segments">
+                    @foreach (var segment in tripSegments)
+                    {
+                        @i; @bracket; @segment.Punkt_Poczatkowy.Nazwa; @arrow; @segment.Punkt_Koncowy.Nazwa; @space @segment.Punkty @points @enter;
+
+                        i = i + 1;
+                    }
+                </textarea>
+                    <button class="route-button" onclick="RouteButtonClick()">Utwórz trasę</button>
+                </div>
+                <button class="verification-button" id="create-trip-button" onclick="CreateButtonClick()"> Zatwierdź </button>
+                <button class="verification-button" id="return-button" onclick="ReturnButtonClick()">Powrót</button>
+            </div>
+        </div>
+
+        <div class="my-modal" id="modalCreate">
+            <div class="my-modal-body">
+                <p style="margin:0">Za chwilę zostanie utworzona nowa wycieczka.</p>
+                <p style="margin:0">Czy jesteś pewien, że chcesz to zrobić?</p>
+            </div>
+
+            <button id="ConfirmButton" class="modalLeftButton modalButton" onclick="ModalButtonClick(true)">Tak</button>
+            <button class="modalRightButton modalButton" onclick="ModalButtonClick(false)">Nie</button>
+        </div>
+
+        <div class="my-modal" id="modalError" style="height: 90px;">
+            <div class="my-modal-body">
+                <p style="margin:0">W podanym terminie masz już inną wycieczkę.</p>
+                <p style="margin:0"></p>
+            </div>
+
+            <button id="OkButton" class="modalButton" onclick="OkButtonClick()">OK</button>
+        </div>
+
+    </div>
+</body>
+</html>
+
+@section Scripts
+{
+    <script>
+        function ReturnButtonClick() {
+            window.location.href = "@Url.Action("Index", "Wycieczka")";
+        }
+
+        function CreateButtonClick() {
+            $("#modalCreate").fadeIn(800).css("display", "block");
+            $("#overlay").css("background-color", "rgba(0,0,0,0.2)").css("pointer-events", "none");
+        }
+
+        function ModalButtonClick(decision) {
+            $("#modalCreate").css("display", "none");
+            $("#overlay").css("background-color", "rgba(0,0,0,0)").css("pointer-events", "all");
+
+            if (decision) document.getElementById("createTrip").click();
+        }
+
+        function ErrorModal() {
+            $("#modalError").fadeIn(800).css("display", "block");
+            $("#modalError").css("display", "block");
+            $("#overlay").css("background-color", "rgba(0,0,0,0)").css("pointer-events", "all");
+        }
+
+        function OkButtonClick() {
+            $("#modalError").css("display", "none");
+            $("#overlay").css("background-color", "rgba(0,0,0,0)").css("pointer-events", "all");
+        }
+
+        function RouteButtonClick() {
+            window.location.href = "@Url.Action("ChooseRoute", "Wycieczka")";
+        }
+
+    </script>
+}

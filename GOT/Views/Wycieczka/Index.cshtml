@@ -1,0 +1,146 @@
+﻿@model IEnumerable<GOT.Models.Wycieczka>
+@{
+    ViewData["Title"] = "Trips Page";
+    var filterOption = ViewData["filterOptionNumber"].ToString();
+    var orderOption = ViewData["orderOptionNumber"].ToString();
+    var titlesList = ViewData["Titles"] as List<string>;
+    var timesList = ViewData["Times"] as List<string>;
+    var i = 0;
+}
+
+<div class="content-container">
+    <div id="overlay">
+
+        <h1>Zaplanowane wycieczki</h1>
+        <p style="padding-left: 20px; float: left;">
+            Filtruj:
+            <select id="FilterList" asp-for="@filterOption" onchange="FilterListClick()">
+                <option value="1">Wycieczki styczeń</option>
+                <option value="2">Wycieczki luty</option>
+                <option value="3">Wycieczki marzec</option>
+                <option value="4">Wycieczki kwiecień</option>
+                <option value="5">Wycieczki maj</option>
+                <option value="6">Wycieczki czerwiec</option>
+                <option value="7">Wycieczki lipiec</option>
+                <option value="8">Wycieczki sierpień</option>
+                <option value="9">Wycieczki wrzesień</option>
+                <option value="10">Wycieczki październik</option>
+                <option value="11">Wycieczki listopad</option>
+                <option value="12">Wycieczki grudzień</option>
+                <option value="13">Pokaż Wszystkie</option>
+            </select>
+        </p>
+
+        <p style="padding-right: 20px; float:right;">
+            Sortuj:
+            <select id="OrderList" asp-for="@orderOption" onchange="OrderListClick()">
+                <option selected value="1">Od najnowszych</option>
+                <option value="2">Od najstarszych</option>
+            </select>
+        </p>
+
+
+        @foreach (var item in Model)
+        {
+            <div class="tripContainer">
+                <div class="tripTextContainer">
+                    <div><p>@titlesList[i]</p></div>
+                    <div><p>@timesList[i]</p></div>
+                </div>
+                <div class="tripButtonContainer">
+                    <button class="tripButton" id="DetailsTripButton" onclick="ButtonClick('Details', @item.Numer)">Szczegóły</button>
+                    <button class="tripButton" id="UpdateTripButton" onclick="ButtonClick('Update', @item.Numer)">Modyfikuj</button>
+                    <button class="tripButton" id="DeleteTripButton" onclick="ButtonClick('Delete', @item.Numer)">Usuń</button>
+                </div>
+            </div>
+
+            i = i + 1;
+        }
+
+        <div class="pageChanger">
+            <form method="post">
+                <a onclick="LeftBracketClick()"><</a>
+                <button id="Button1" class="pageChangerCircle" name="pageNumber" value=@ViewData["CurrentPageNumber"]>@ViewData["CurrentPageNumber"]</button>
+                <button id="Button2" class="pageChangerCircle" name="pageNumber" value=@ViewData["NextPageNumber"]>@ViewData["NextPageNumber"]</button>
+                <button class="pageChangerCircle" disabled>...</button>
+                <button id="Button3" class="pageChangerCircle" name="pageNumber" value=@ViewData["MaxPageNumber"]>@ViewData["MaxPageNumber"]</button>
+                <a onclick="RightBracketClick()">></a>
+            </form>
+        </div>
+
+        <button id="CreateTripButton" onclick="ButtonClick('Create', -1)">Zaplanuj nową wycieczkę</button>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        function LeftBracketClick() {
+
+            var number = parseInt(document.getElementById("Button1").textContent);
+            var nextNumber = parseInt(document.getElementById("Button2").textContent);
+
+            number = Math.max(number - 1, 1);
+            nextNumber = Math.min(number + 1, nextNumber);
+
+            $("#Button1").text(number);
+            $("#Button1").val(number);
+
+            $("#Button2").text(nextNumber);
+            $("#Button2").val(nextNumber);
+        }
+
+        function RightBracketClick() {
+
+            var number = parseInt(document.getElementById("Button1").textContent);
+            var nextNumber = parseInt(document.getElementById("Button2").textContent);
+            var maxNumber = parseInt(document.getElementById("Button3").textContent);
+
+            number = Math.min(number + 1, (Math.max(maxNumber - 2, 1)));
+            nextNumber = Math.max(Math.min(number + 1, (Math.max(maxNumber - 1, 1))), nextNumber);
+
+            $("#Button1").text(number);
+            $("#Button1").val(number);
+
+            $("#Button2").text(nextNumber);
+            $("#Button2").val(nextNumber);
+        }
+
+        function FilterListClick() {
+            var selectFilter = document.getElementById("FilterList");
+            var selectOrder = document.getElementById("OrderList");
+            window.location.href = "@Url.Action("Index", "Wycieczka")?pageNumber=1" + "&filterOption=" + selectFilter.options[selectFilter.selectedIndex].value
+                + "&orderOption=" + selectOrder.options[selectOrder.selectedIndex].value;
+        }
+
+        function OrderListClick() {
+            var selectFilter = document.getElementById("FilterList");
+            var selectOrder = document.getElementById("OrderList");
+            window.location.href = "@Url.Action("Index", "Wycieczka")?pageNumber=1" + "&filterOption=" + selectFilter.options[selectFilter.selectedIndex].value
+                + "&orderOption=" + selectOrder.options[selectOrder.selectedIndex].value;
+        }
+
+        function ButtonClick(pageName, tripNumber) {
+            if (pageName == "Details") RedirectToDetails(tripNumber);
+            else if (pageName == "Delete") RedirectToDelete(tripNumber);
+            else if (pageName == "Create") RedirectToCreate();
+            else if (pageName == "Update") RedirectToUpdate(tripNumber);
+        }
+
+        function RedirectToDetails(tripNumber) {
+            window.location.href = "@Url.Action("Details", "Wycieczka")?tripNumber=" + tripNumber;
+        }
+
+        function RedirectToDelete(tripNumber) {
+            window.location.href = "@Url.Action("Delete", "Wycieczka")?tripNumber=" + tripNumber;
+        }
+
+        function RedirectToCreate() {
+            window.location.href = "@Url.Action("Create", "Wycieczka")";
+        }
+
+        function RedirectToUpdate(tripNumber) {
+            window.location.href = "@Url.Action("Update", "Wycieczka")?tripNumber=" + tripNumber;
+        }
+    </script>
+}

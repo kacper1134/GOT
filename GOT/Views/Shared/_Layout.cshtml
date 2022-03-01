@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GOT</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/navbar.css" />
+    <link rel="stylesheet" href="~/css/Verification.css" />
+    <link rel="stylesheet" href="~/css/VerificationDetails.css" />
+    <link rel="stylesheet" href="~/css/ApplicationDeclineReason.css" />
+    <link rel="stylesheet" href="~/css/modal.css" />
+    <link rel="stylesheet" href="~/css/TripIndex.css" />
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.js" type="text/javascript"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo"><a asp-controller="Home" asp-action="Index"><img src="~/images/Logo.png" height="55" /></a></div>
+            <ul id="main-navigation">
+                <li><a href="#" class="nav-link">Aktualności</a></li>
+                <li><a asp-controller="Map" asp-action="Index" class="nav-link">Mapa</a></li>
+                <li><a href="#" class="nav-link">Trasy</a></li>
+                <li>
+                    <a href="#" class="nav-link">Konto</a>
+                    <ul>
+                        <li><a href="#" class="nav-link"><img id="DotHorizontal" src="~/images/Dot.jpg" width="8" />Dane osobowe</a></li>
+                        <li><a asp-controller="HistoriaWycieczek" asp-action="Index" class="nav-link"><img id="DotHorizontal" src="~/images/Dot.jpg" width="8" />Historia wycieczek</a></li>
+                        <li><a asp-controller="Weryfikacja" asp-action="Index" class="nav-link"><img id="DotHorizontal" src="~/images/Dot.jpg" width="8" />Moje wnioski</a></li>
+                        <li id="Wycieczki"><a asp-controller="Wycieczka" asp-action="Index" class="nav-link"><img id="DotHorizontal" src="~/images/Dot.jpg" width="8" />Moje wycieczki</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" class="nav-link">Kontakt</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="main">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/navbar.js" type="text/javascript"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

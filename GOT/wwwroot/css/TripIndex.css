@@ -1,0 +1,72 @@
+﻿.tripContainer {
+    margin-top: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    height: 115px;
+
+    background-color: #BBBED3;
+    border: 2px solid #387FBB;
+
+    border-radius: 25px;
+    position: relative;
+}
+
+.tripTextContainer {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.tripTextContainer > div {
+    width: 100%;
+    margin: 0;
+}
+
+.tripTextContainer div p {
+    margin: 0px;
+    text-align: center;
+    text-indent: -50px;
+}
+
+.tripButtonContainer {
+    margin-top: 15px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#CreateTripButton {
+    border-radius: 25px;
+    width: 300px;
+    height: 40px;
+    position: fixed;
+    bottom: 10px;
+    left: 10%;
+    background: #40DD82;
+    font-weight: 700;
+    border: 2px solid black;
+}
+
+
+.tripButton {
+    border-radius: 20px;
+    font-size: 17px;
+    font-weight: 700;
+    width: 150px;
+    height: 35px;
+    border: 2px solid black;
+}
+
+#DetailsTripButton {
+    background: #21E2E8;
+    float: left;
+}
+
+#UpdateTripButton {
+    background: #FFA647;
+    margin-left: 13%;
+}
+
+#DeleteTripButton {
+    float: right;
+    background: #FD5757;
+}

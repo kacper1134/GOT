@@ -1,0 +1,168 @@
+﻿@using GOT.ViewModels
+@model RouteViewModel
+
+@{
+    ViewData["Title"] = "Trasa";
+}
+
+<html>
+<head>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/map.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css" />
+</head>
+<body>
+    <div id="map"> </div>
+</body>
+
+</html>
+
+@section Scripts {
+    <script>
+        var points = @Html.Raw(ViewData["serialized-points"]);
+        var routes = @Html.Raw(ViewData["serialized-routes"]);
+        var tripNumber = @Html.Raw(ViewData["TripNumber"]);
+        var verificationNumber = @Html.Raw(ViewData["VerificationNumber"]);
+        var callerController = @Html.Raw(ViewData["Controller"]);
+        var callerAction = @Html.Raw(ViewData["Action"]);
+
+        function initMap() {
+            var location = new google.maps.LatLng(50.76, 15.73);
+            var mapProperties = {center: location, zoom: 10, scrollwheel: true, draggable: true, disableDefaultUI: true, mapTypeId: 'terrain', minZoom: 6, maxZoom: 15};
+            var map = new google.maps.Map(document.getElementById("map"), mapProperties);
+            var markers = new Array(points.length);
+            var mapRoutes = new Array(routes.length);
+
+            const markerIcon = "/images/point.png";
+
+            for (const index in points) {
+                let point = points[index];
+
+                location = new google.maps.LatLng(point.Szerokosc_Geograficzna, point.Dlugosc_Geograficzna);
+
+                markers[index] = new google.maps.Marker({
+                    position: location,
+                    icon: markerIcon
+                });
+                markers[index].setMap(map);
+            }
+
+            for(const index in routes) {
+                let route = routes[index];
+                let beginning = points.filter((point) => {return point.Numer === route.Numer_Punktu_Poczatkowego})[0];
+                let ending = points.filter((point) => {return point.Numer === route.Numer_Punktu_Koncowego})[0];
+
+                const coordinates = [
+                    {lat: beginning.Szerokosc_Geograficzna, lng: beginning.Dlugosc_Geograficzna},
+                    {lat: ending.Szerokosc_Geograficzna, lng: ending.Dlugosc_Geograficzna},
+                ];
+
+                const routeColor = GetColorForRouteType(route.Kolor);
+
+                const dash = {
+                    path: 'M 0, -1 0, 1',
+                    strokeOpacity: 1,
+                    scale: 4
+                }
+
+                const mapRoute = new google.maps.Polyline({
+                    path: coordinates,
+                    geodesic: true,
+                    strokeColor: routeColor,
+                    strokeOpacity: 0,
+                    strokeWeight: 100,
+                    icons: [{
+                        icon: dash,
+                        offset: '0',
+                        repeat: '20px'
+                    }]
+                });
+
+                mapRoutes[index] = mapRoute;
+
+                mapRoute.setMap(map);
+            }
+
+            map.zoom_changed = function() {
+                for (const index in markers) {
+                    let marker = markers[index];
+
+                    if (map.getZoom() < 9) {
+                        marker.setVisible(false);
+                    } else {
+                        marker.setVisible(true);
+                    }
+                }
+
+                for (const index in mapRoutes) {
+                    let mapRoute = mapRoutes[index];
+
+                    if (map.getZoom() < 9) {
+                        mapRoute.setVisible(false);
+                    } else {
+                        mapRoute.setVisible(true);
+                    }
+                }
+            }
+
+            var addRouteButton = AddRouteButton(document.createElement("button"));
+
+            map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(addRouteButton);
+        }
+
+        function GetColorForRouteType(routeType) {
+            switch(routeType) {
+                case 0:
+                    return "#FF2400";
+                case 1:
+                    return "#3F37C9";
+                case 2:
+                    return "#F9C74F";
+                case 3:
+                    return "#32CD32";
+                case 4:
+                    return "#000000";
+                default:
+                    return "#777777";
+            }
+        }
+
+        function AddRouteButton(routeButton) {
+            routeButton.classList.add("standard-button");
+
+            routeButton.innerText = "Powrót";
+
+            routeButton.setAttribute("data-toggle", "modal");
+            routeButton.setAttribute("data-backdrop", "false");
+            routeButton.setAttribute("onclick", "ClickReturnButton()");
+
+            return routeButton;
+        }
+
+
+        function ClickReturnButton() {
+            if (verificationNumber != -1)
+            {
+                window.location.href = "/" + callerController + "/" + callerAction + "?id" + "=" + verificationNumber;
+            }
+            else
+            {
+                window.location.href = "/" + callerController + "/" + callerAction + "?tripNumber" + "=" + tripNumber;
+            }
+        }
+
+        let findMatchingPoints = function(text) {
+            return points.map(point => point.Nazwa)
+            .filter(name => name.toLowerCase().includes(text.toLowerCase()));
+        }
+
+
+        window.onload = function() {
+            $("#points").empty();
+        }
+
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpRI3hcuVN05u48uFMYYmSU3p34_wLgNY&callback=initMap">
+    </script>
+}
+

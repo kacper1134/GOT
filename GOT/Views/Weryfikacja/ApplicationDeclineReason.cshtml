@@ -1,0 +1,61 @@
+﻿@model Weryfikacja;
+
+@{
+    ViewData["Title"] = "Decline Reason";
+
+}
+
+<div class="content-container">
+    <div id="overlay">
+        <div class="verification-details-container">
+            <h1>@ViewData["ApplicationTitle"]</h1>
+            <form asp-action="ApplicationDeclineUpdate">
+                <div class="decline-reason-container">
+                    <h1>Uzasadnienie odrzucenia</h1>
+
+                    <input type="hidden" asp-for="Numer_Wpisu" name="id" />
+                    <textarea asp-for="Uzasadnienie" name="reason"></textarea>
+                    <span asp-validation-for="Uzasadnienie" class="text-danger"></span>
+                    <button id="submit-button" hidden></button>
+                </div>
+            </form>
+            <button class="verification-button" id="send-button" onclick="SentButtonClick(@Model.Numer_Wpisu)">Prześlij</button>
+            <button class="verification-button" id="cancel-button" onclick="CancelButtonClick()">Anuluj</button>
+        </div>
+    </div>
+    <div class="my-modal" id="modalAccept">
+        <div class="my-modal-body">
+            <p style="margin:0">Wniosek zostanie odrzucony.</p>
+            <p style="margin:0">Czy potwierdzasz swoją decyzję?</p>
+        </div>
+
+        <button id="ConfirmButton" class="modalLeftButton modalButton" onclick="ModalButtonClick(true)">Tak</button>
+        <button class="modalRightButton modalButton" onclick="ModalButtonClick(false)">Nie</button>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function CancelButtonClick() {
+            window.location.href = "@Url.Action("Index", "Weryfikacja")?pageNumber=1";
+        }
+
+        function SentButtonClick(id) {
+                $("#modalAccept").fadeIn(800).css("display", "block");
+                $("#overlay").css("background-color", "rgba(0,0,0,0.2)").css("pointer-events", "none");
+                $("#accept-button").val(id);
+            }
+
+        function ModalButtonClick(decision) {
+            id = parseInt($("#accept-button").attr("value"));
+            $("#modalAccept").css("display", "none");
+            $("#overlay").css("background-color", "rgba(0,0,0,0)").css("pointer-events", "all");
+            if (decision) $("#submit-button").click();
+        }
+    </script>
+}

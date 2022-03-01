@@ -1,0 +1,94 @@
+﻿@model Wycieczka
+
+@{
+    ViewData["Title"] = "Trip Update Page";
+
+    var tripSegments = ViewData["TripSegments"] as List<Odcinek>;
+    var i = 1;
+    var arrow = " -> ";
+    var enter = "\n";
+    var bracket = ") ";
+    var points = " punktów";
+    var space = " ";
+}
+
+<html>
+<head>
+    <link rel="stylesheet" href="~/css/TripDetailsPage.css" />
+    <link rel="stylesheet" href="~/css/TripCreatePage.css" />
+</head>
+<body>
+    <div class="content-container">
+        <div id="overlay">
+            <div class="trip-details-container">
+                <h1>Edytowanie Wycieczki</h1>
+                <form class="editTripFrom" method="post" asp-action="UpdateConfirm">
+                    <input hidden name="routeNumber" value="@ViewData["RouteNumber"]" />
+                    <input hidden name="tripNumber" value="@Model.Numer" />
+
+                    <label class="control-label" for="startDate">Data początkowa</label>
+                    <input class="form-control" name="startDate" type="date" value="@ViewData["CurrentDate"]" min="@ViewData["CurrentDate"]"
+                           max="@ViewData["MaxData"]" required />
+
+                    <label class="control-label" for="tripDuration">Czas trwania(dni)</label>
+                    <input id="dateInput" class="form-control" name="tripDuration" type="number" min="1" max="20" value="1" />
+                    <input type="submit" id="updateTrip" hidden />
+                </form>
+
+                <div class="route-segments">
+                    <h1>Trasa wycieczki</h1>
+                    <textarea disabled class="segments">
+                    @foreach (var segment in tripSegments)
+                    {
+                        @i; @bracket; @segment.Punkt_Poczatkowy.Nazwa; @arrow; @segment.Punkt_Koncowy.Nazwa; @space @segment.Punkty @points @enter;
+
+                        i = i + 1;
+                    }
+                </textarea>
+                    <button class="route-button" onclick="RouteButtonClick(@Model.Numer)">Modyfikuj trasę</button>
+                </div>
+                <button class="verification-button" id="create-trip-button" onclick="UpdateButtonClick()"> Zatwierdź </button>
+                <button class="verification-button" id="return-button" onclick="ReturnButtonClick()">Powrót</button>
+            </div>
+        </div>
+
+        <div class="my-modal" id="modalUpdate">
+            <div class="my-modal-body">
+                <p style="margin:0">Modyfikacja wycieczki jest nieodwracalna.</p>
+                <p style="margin:0">Czy jesteś pewien, że chcesz to zrobić?</p>
+            </div>
+
+            <button id="ConfirmButton" class="modalLeftButton modalButton" onclick="ModalButtonClick(true)">Tak</button>
+            <button class="modalRightButton modalButton" onclick="ModalButtonClick(false)">Nie</button>
+
+        </div>
+
+    </div>
+</body>
+</html>
+
+@section Scripts
+{
+    <script>
+        function ReturnButtonClick() {
+            window.location.href = "@Url.Action("Index", "Wycieczka")";
+        }
+
+        function UpdateButtonClick() {
+            $("#modalUpdate").fadeIn(800).css("display", "block");
+            $("#overlay").css("background-color", "rgba(0,0,0,0.2)").css("pointer-events", "none");
+        }
+
+        function ModalButtonClick(decision) {
+            $("#modalUpdate").css("display", "none");
+            $("#overlay").css("background-color", "rgba(0,0,0,0)").css("pointer-events", "all");
+
+            if (decision) document.getElementById("updateTrip").click();
+        }
+
+        function RouteButtonClick(tripNumber) {
+            window.location.href = "@Url.Action("ChooseRoute", "Wycieczka")?tripNumber=" + tripNumber;
+        }
+
+    </script>
+}

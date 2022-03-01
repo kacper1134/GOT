@@ -1,0 +1,114 @@
+﻿.content-container {
+    margin-top: 40px;
+    min-height: 600px;
+    width: 800px;
+
+    background-color: rgba(172, 174, 198, 0.75);
+    color: #387FBB;
+    
+    border-radius: 20px;
+
+    position:absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    top: 100px;
+
+    z-index: 1;
+}
+
+.content-container h1 {
+    margin: 5px;
+    text-align: center;
+    font-size: 30px;
+}
+
+.content-container > p {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.content-container p > select {
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 600;
+    background-color: #BBBED3;
+    border-color: #387FBB;
+    color: #387FBB;
+
+    min-width: 10vw;
+}
+
+.application-container {
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+
+    width: 100%;
+    height: 70px;
+    display: flex;
+}
+
+.application-text-container {
+    margin-left: auto;
+
+    width: 50%;
+    height: 70px;
+    background-color: #BBBED3;
+    border-radius: 20px 0px 0px 20px;
+    border-style: solid;
+
+    border-right-width: 0;
+}
+
+.application-text-container > p {
+   font-size: 15px;
+   margin: 10px;
+   font-weight: 600;
+}
+
+
+.application-button-container {
+
+    margin-right: auto;
+
+    width: 20%;
+    height: 70px;
+    background-color: #99C8EF;
+    border-radius: 0px 20px 20px 0px;
+
+    border-style: solid;
+
+    font-weight: 700;
+    border-width: 3px;
+}
+
+.pageChanger {
+    position:fixed;
+    bottom:10px; 
+    right:10px;
+
+    color: #387FBB
+}
+
+.pageChanger > form > a {
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.pageChanger > form > a:hover{
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.pageChangerCircle {
+    min-width: 30px;
+    min-height: 30px;
+    background-color: #BBBED3;
+    border-radius: 50%;
+
+    border: none;
+
+    font-weight: 700;
+    color: #387FBB;
+}
