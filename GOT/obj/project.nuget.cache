@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "XlAjLTXlqpjaY6M88fFiUwYiYJzw5gcbvhO0xGCtVJIleSmaCy8xpbT/KoMhHAp2G/5wncRd7VWqfT1/VdfFQg==",
+  "dgSpecHash": "bdrBiBj5KAnWISt3GVmA2wyST5mYYZMZuoamwUWXkeker+ski+zs4UYQJjiZVYN4gUvqNR4VqRGsCqWDHqZiwg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\kacpe\\Desktop\\GOT-Project\\Etap 4\\GOT\\GOT.csproj",
+  "projectFilePath": "C:\\Users\\kacpe\\Desktop\\GOTv2\\GOT\\GOT.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kacpe\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\kacpe\\.nuget\\packages\\microsoft.aspnetcore.html.abstractions\\2.2.0\\microsoft.aspnetcore.html.abstractions.2.2.0.nupkg.sha512",

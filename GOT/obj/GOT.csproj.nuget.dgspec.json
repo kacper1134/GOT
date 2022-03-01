@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kacpe\\Desktop\\GOT-Project\\Etap 4\\GOT\\GOT.csproj": {}
+    "C:\\Users\\kacpe\\Desktop\\GOTv2\\GOT\\GOT.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kacpe\\Desktop\\GOT-Project\\Etap 4\\GOT\\GOT.csproj": {
+    "C:\\Users\\kacpe\\Desktop\\GOTv2\\GOT\\GOT.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kacpe\\Desktop\\GOT-Project\\Etap 4\\GOT\\GOT.csproj",
+        "projectUniqueName": "C:\\Users\\kacpe\\Desktop\\GOTv2\\GOT\\GOT.csproj",
         "projectName": "GOT",
-        "projectPath": "C:\\Users\\kacpe\\Desktop\\GOT-Project\\Etap 4\\GOT\\GOT.csproj",
+        "projectPath": "C:\\Users\\kacpe\\Desktop\\GOTv2\\GOT\\GOT.csproj",
         "packagesPath": "C:\\Users\\kacpe\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kacpe\\Desktop\\GOT-Project\\Etap 4\\GOT\\obj\\",
+        "outputPath": "C:\\Users\\kacpe\\Desktop\\GOTv2\\GOT\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\kacpe\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -81,7 +81,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.404\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.405\\RuntimeIdentifierGraph.json"
         }
       }
     }
